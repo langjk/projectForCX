@@ -1,14 +1,14 @@
 <template>  
     <div class="container">
         <div class="title">今日任务执行成功率</div>
-        <div class="totalNum">96.18%</div>
+        <div class="totalNum">{{completeData.series.data[0].value}}%</div>
         <div class="unit">今日任务执行成功率</div>  
         <div id="complete" style="width: 100%;height:400px;"></div>
     </div>
 </template>  
 
 <script>  
-import { onMounted, onUnmounted, ref } from 'vue'  
+import { onMounted, onUnmounted, ref, watch } from 'vue'  
 import * as echarts from 'echarts' // 确保您已经安装了echarts并正确导入了它  
 
 export default {  
@@ -35,7 +35,10 @@ export default {
             if (myChart.value) {  
                 myChart.value.dispose(); // 组件卸载时清理echarts实例  
             }  
-        });  
+        });   
+        watch(props.completeData, (newVal, oldVal) => {  
+                myChart.value.setOption(newVal); // 设置图表选项  
+        }); 
     }  
 }  
 </script>
@@ -57,6 +60,7 @@ export default {
     font-size:40px;
     font-weight: bold;
     margin-top:20px;
+    font-family: "DINPro-Bold";
 }
 .unit{
     font-size: 15px;

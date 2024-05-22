@@ -1,143 +1,169 @@
 <template>
   <div style="display:flex;justify-content:space-between">
-    <lightChart :lightData="lightData"></lightChart>
-    <runChart :runData="runData"></runChart>
-    <missionChart :missionData="missionData"></missionChart>
+    <lightChart :lightTotal="lightTotal" :lightData="lightData"></lightChart>
+    <runChart :runTotal="runTotal" :runData="runData"></runChart>
+    <missionChart :missionTotal="missionTotal" :missionData="missionData"></missionChart>
     <completeChart :completeData="completeData"></completeChart>
+  </div>
+  <div class="lightContainer">
+    <lightControl :title="'第一组灯光'"></lightControl>
+    <lightControl :title="'第二组灯光'"></lightControl>
+    <lightControl :title="'第三组灯光'"></lightControl>
   </div>
 </template>
 
 <script>  
-import { ref, onMounted, onUnmounted } from 'vue';  
+import { ref, onMounted, onUnmounted, onBeforeUnmount } from 'vue';  
 import MqttClient from '../utils/mqttClient.js';  
 import lightChart from '../components/lightMonitor/lightChart.vue';
 import runChart from '../components/lightMonitor/runChart.vue';
 import missionChart from '../components/lightMonitor/missionChart.vue';
 import completeChart from '../components/lightMonitor/completeChart.vue';
+import lightControl from '../components/lightMonitor/lightControl.vue';
 export default {  
   components: {  
     lightChart,
     runChart,
     missionChart,
-    completeChart
+    completeChart,
+    lightControl
   },  
-  data() {  
-      return {  
-        lightData: [{
-          title:'类型1',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
-        },{
-          title:'类型2',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
-        },{
-          title:'类型3',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
-        },{
-          title:'类型4',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
-        },{
-          title:'类型5',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
-        }],
-        runData: [{
-          title:'类型1',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
-        },{
-          title:'类型2',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
-        },{
-          title:'类型3',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
-        },{
-          title:'类型4',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
-        },{
-          title:'类型5',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
-        }],
-        missionData: {
-          legend: {
-            orient: 'vertical',
-            right:0,
-            textStyle:{color:'#F7FAFF'},
-            top: 'center',
-            data: ['执行完成', '执行中', '启动中','执行失败','强制停止']
-          },
-          color:['#31E6C5','#095AD4','#3888FF','#CF324E','#637088'],
-          series: [
-            {
-              type: 'pie',
-              width:'80%',
-              left:-20,
-              label: {
-                show: false,
-                position: 'center'
-              },
-              data: [
-                {
-                  value: Math.floor(Math.random() * 1000),
-                  name: '执行完成'
-                },
-                {
-                  value: Math.floor(Math.random() * 1000),
-                  name: '执行中'
-                },
-                {
-                  value: Math.floor(Math.random() * 1000),
-                  name: '启动中'
-                },
-                {
-                  value: Math.floor(Math.random() * 1000),
-                  name: '执行失败'
-                },
-                {
-                  value: Math.floor(Math.random() * 1000),
-                  name: '强制停止'
-                }
-              ],
-              radius: ['50%', '70%']
-            }
-          ]
-        },
-        completeData:{
-          series:{
-            type:'gauge',
-            startAngle: 180,
-            endAngle: 0,
-            itemStyle: {
-              color: '#f7faff'
-            },
-            progress: {
-              show: true,
-              width: 14,
-              itemStyle:{
-              color:'#095AD4'}
-            },
-            data: [
-              {
-                value: 96.18
-              }
-            ],
-            axisLine: {
-              lineStyle: {
-                width: 14,
-                color:[[1, '#0027666b']]
-              }
-            },
-            axisTick: {
-              show:false
-            },
-            axisLabel: {
-              show:false
-            },
-            splitLine: {
-              show:false
-            },
-            detail: {
-              show:false
-            },
-            pointer: {
-              length:'80%',
-              width:4
-            },
-          },
-        }
-      }  
-  },
   setup() {  
     const PublicMqtt = ref(null); 
+    const lightData= ref([{
+        title:'类型1',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
+      },{
+        title:'类型2',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
+      },{
+        title:'类型3',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
+      },{
+        title:'类型4',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
+      },{
+        title:'类型5',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
+    }])
+    const runData = ref([{
+      title:'类型1',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
+    },{
+      title:'类型2',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
+    },{
+      title:'类型3',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
+    },{
+      title:'类型4',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
+    },{
+      title:'类型5',count:Math.floor(Math.random() * 300),percent:Math.floor(Math.random() * 100)
+    }])
+    const missionData=ref({
+      legend: {
+        orient: 'vertical',
+        right:0,
+        textStyle:{color:'#F7FAFF'},
+        top: 'center',
+        data: ['执行完成', '执行中', '启动中','执行失败','强制停止']
+      },
+      color:['#31E6C5','#095AD4','#3888FF','#CF324E','#637088'],
+      series: [
+        {
+          type: 'pie',
+          width:'80%',
+          left:-20,
+          label: {
+            show: false,
+            position: 'center'
+          },
+          data: [
+            {
+              value: Math.floor(Math.random() * 1000),
+              name: '执行完成'
+            },
+            {
+              value: Math.floor(Math.random() * 1000),
+              name: '执行中'
+            },
+            {
+              value: Math.floor(Math.random() * 1000),
+              name: '启动中'
+            },
+            {
+              value: Math.floor(Math.random() * 1000),
+              name: '执行失败'
+            },
+            {
+              value: Math.floor(Math.random() * 1000),
+              name: '强制停止'
+            }
+          ],
+          radius: ['50%', '70%']
+        }
+      ]
+    }) 
+    const completeData = ref({
+      series:{
+        type:'gauge',
+        startAngle: 180,
+        endAngle: 0,
+        itemStyle: {
+          color: '#f7faff'
+        },
+        progress: {
+          show: true,
+          width: 14,
+          itemStyle:{
+          color:'#095AD4'}
+        },
+        data: [
+          {
+            value: 96.18
+          }
+        ],
+        axisLine: {
+          lineStyle: {
+            width: 14,
+            color:[[1, '#0027666b']]
+          }
+        },
+        axisTick: {
+          show:false
+        },
+        axisLabel: {
+          show:false
+        },
+        splitLine: {
+          show:false
+        },
+        detail: {
+          show:false
+        },
+        pointer: {
+          length:'80%',
+          width:4
+        },
+      },
+    })
+    const lightTotal = ref(4841)
+    const runTotal = ref(853)
+    const missionTotal = ref(1250)
     let subscription = 'testtopic/#'; // 假设你从某处获取这个值  
-  
+    let intervalId = null;
+    const updateRandomData = () => {  
+      lightTotal.value = 0
+      runTotal.value = 0
+      missionTotal.value = 0
+      lightData.value.forEach(item => {  
+        item.count = Math.floor(Math.random() * 1000);  
+        item.percent = Math.floor(Math.random() * 100);  
+        lightTotal.value += item.count
+      });  
+      runData.value.forEach(item => {  
+        item.count = Math.floor(Math.random() * 300);  
+        item.percent = Math.floor(Math.random() * 100);  
+        runTotal.value += item.count
+      });  
+      missionData.value.series[0].data.forEach(item => {  
+        item.value = Math.floor(Math.random() * 1000);   
+        missionTotal.value += item.value
+      }); 
+      completeData.value.series.data[0].value = Math.floor(Math.random() * 10000) / 100;
+    };  
     const startMqtt = () => {  
       PublicMqtt.value = new MqttClient(subscription);  
       PublicMqtt.value.init();  
@@ -146,9 +172,14 @@ export default {
     };  
 
     onMounted(() => {  
+      intervalId = setInterval(updateRandomData, 2000);
       // startMqtt();  
     });  
-  
+
+    onBeforeUnmount(() => {  
+      clearInterval(intervalId); // 在组件卸载前清除定时器  
+    });
+
     onUnmounted(() => {  
       if (PublicMqtt.value) {  
         PublicMqtt.value.over();  
@@ -156,13 +187,26 @@ export default {
     });  
   
     return {  
+      lightData,
+      runData,
+      missionData,
+      completeData,
+      lightTotal,
+      runTotal,
+      missionTotal
     };  
   },  
 };  
 </script>
 
 <style scoped>
-.read-the-docs {
-  color: #888;
+.lightContainer{
+    background-color: rgb(36,40,51);
+    width:100%;
+    height:500px;
+    border-radius: 10px;
+    margin-top:20px;
+    display: flex;
+    justify-content: space-between;
 }
 </style>../utils/mqttClient.js

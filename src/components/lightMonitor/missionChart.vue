@@ -1,14 +1,14 @@
 <template>  
     <div class="container">
         <div class="title">今日任务执行监控</div>
-        <div class="totalNum">2918</div>
+        <div class="totalNum">{{missionTotal}}</div>
         <div class="unit">今日运行数(个)</div>  
         <div id="main" style="width: 100%;height:300px;"></div>
     </div>
 </template>  
 
 <script>  
-import { onMounted, onUnmounted, ref } from 'vue'  
+import { onMounted, onUnmounted, ref, watch } from 'vue'  
 import * as echarts from 'echarts' // 确保您已经安装了echarts并正确导入了它  
 
 export default {  
@@ -16,7 +16,11 @@ export default {
         missionData: {  
             type: Object,  
             required: true  
-        }  
+        },
+        missionTotal: {
+            type: Number,
+            required: true
+        } 
     },  
     setup(props) {  
         const myChart = ref(null); // 使用 ref 创建一个响应式引用  
@@ -30,12 +34,14 @@ export default {
                 });
             }  
         });  
-
         onUnmounted(() => {  
             if (myChart.value) {  
                 myChart.value.dispose(); // 组件卸载时清理echarts实例  
             }  
         });  
+        watch(props.missionData, (newVal, oldVal) => {  
+                myChart.value.setOption(newVal); // 设置图表选项  
+        }); 
     }  
 }  
 </script>
@@ -56,6 +62,7 @@ export default {
 .totalNum{
     font-size:40px;
     font-weight: bold;
+    font-family: "DINPro-Bold";
     margin-top:20px;
 }
 .unit{

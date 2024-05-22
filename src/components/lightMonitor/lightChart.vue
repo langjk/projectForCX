@@ -1,7 +1,7 @@
 <template>  
     <div class="container">
         <div class="title">灯光监控</div>
-        <div class="totalNum">180980</div>
+        <div class="totalNum">{{lightTotal}}</div>
         <div class="unit">总数(个)</div>
         <el-table style="margin-top:20px;" :data="lightData">
             <el-table-column label="类型" prop="title">
@@ -32,6 +32,10 @@ export default {
         lightData: {  
             type: Array,  
             required: true  
+        },
+        lightTotal: {
+            type: Number,
+            required: true
         }  
     },  
     setup(props) {  
@@ -56,6 +60,7 @@ export default {
     font-size:40px;
     font-weight: bold;
     margin-top:20px;
+    font-family: "DINPro-Bold";
 }
 .unit{
     font-size: 15px;

@@ -15,6 +15,10 @@
   color:#F7FAFF;
 }
 
+@font-face {
+  font-family: 'DINPro-Bold';
+  src: url('/src/assets/fonts/DINProBold.otf') format('opentype');
+}
 
 body {
   margin: 0;

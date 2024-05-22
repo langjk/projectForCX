@@ -1,7 +1,7 @@
 <template>  
     <div class="container">
         <div class="title">运行监控</div>
-        <div class="totalNum">1560</div>
+        <div class="totalNum">{{runTotal}}</div>
         <div class="unit">今日运行数(个)</div>
         <el-table style="margin-top:20px;" :data="runData">
             <el-table-column label="类型" prop="title">
@@ -32,6 +32,10 @@ export default {
         runData: {  
             type: Array,  
             required: true  
+        },
+        runTotal: {
+            type: Number,
+            required: true
         }  
     },  
     setup(props) {  
@@ -56,6 +60,7 @@ export default {
     font-size:40px;
     font-weight: bold;
     margin-top:20px;
+    font-family: "DINPro-Bold";
 }
 .unit{
     font-size: 15px;
