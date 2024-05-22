@@ -8,13 +8,18 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  --el-color-primary:#0062FF !important;
+  --el-border-color-lighter:#0027666b !important;
+  --el-fill-color-light:#575C6A !important;
+  color:#F7FAFF;
 }
 
 
 body {
   margin: 0;
   display: flex;
-  min-width: 1000px;
+  min-width: 1300px;
   min-height: 100vh;
   background-color: rgb(24,29,35);
 }
@@ -23,6 +28,26 @@ body {
 .el-header{
   padding:0 !important;
   --el-header-height:auto !important;
+}
+
+.el-table{
+  border-radius: 5px;
+  --el-table-header-bg-color:rgb(49,53,65) !important;
+  --el-table-tr-bg-color:none !important;
+  --el-table-text-color:#f7faff !important;
+  --el-table-border:none !important;
+  --el-table-border-color:none !important;
+  --el-table-bg-color:none !important;
+}
+
+.el-table__header{
+  color:rgb(152,153,158) !important;
+}
+
+.el-progress__text{
+  color:#f7faff !important;
+  min-width:30px !important;
+  margin:none !important;
 }
 
 #app {

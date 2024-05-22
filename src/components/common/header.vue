@@ -13,7 +13,7 @@ export default {
 <style scoped>
 .title{
     font-size:30px;
-    color:white;
+    color:#F7FaFF;
     height:50px;
     background-color:rgb(4,8,19);
     text-align: start;
