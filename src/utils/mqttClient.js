@@ -7,11 +7,12 @@ class MqttClient{
     static oldSubscribe; //取消订阅准备
     static subscribe; //订阅地址
     static client; //mqtt公共变量
-    constructor(subscribe) {
-        console.log(subscribe, "订阅地址");
+    constructor(url,subscribe) {
+        console.log( "订阅地址:",subscribe);
+        console.log( "url:",url.value);
         //获取传递来的订阅地址
         this.subscribe = subscribe;
-        this.url = "mqtts://broker.emqx.io:1883";
+        this.url = url;
     }
 
     //初始化mqtt
@@ -57,5 +58,15 @@ class MqttClient{
             console.log("收到消息：", message.toString());
         });
     }
+    //发送消息
+    publish(topic, message) {
+        this.client.publish(topic, message, (error) => {
+            if (!error) {
+                console.log("消息发送成功");
+            } else {
+                console.error("消息发送失败", error);
+            }
+        });
+    }
 }
-export default MqttClient;　
+export default MqttClient;

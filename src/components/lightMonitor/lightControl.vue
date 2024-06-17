@@ -7,6 +7,7 @@
             style="--el-switch-on-color:rgb(14,209,239); --el-switch-off-color:rgb(221,43,67)"
             active-text="开"
             inactive-text="关"
+            @change="handleChange"
         />
         <div class="lightGroup">
             <div class="subGroup" v-for="i in 6" :key="i">
@@ -26,7 +27,7 @@ export default {
         title: {  
             type: String,  
             required: true  
-        }  
+        }
     },
     setup() {
         const switchStatus = ref(0)
@@ -38,6 +39,11 @@ export default {
             lightOffRef
         }
     },
+    methods: {
+        handleChange() {
+            this.$emit('switch-changed', this.switchStatus);
+        }
+    }
 }
 </script>
 <style scoped>
