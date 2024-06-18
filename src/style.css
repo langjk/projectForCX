@@ -28,6 +28,9 @@ body {
   background-color: rgb(24,29,35);
 }
 
+.el-main{
+  overflow: hidden !important;
+}
 
 .el-header{
   padding:0 !important;

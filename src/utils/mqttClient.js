@@ -53,9 +53,11 @@ class MqttClient{
         });
     }
     //收到的消息
-    get() {
+    get(onMessageCallback) {
         this.client.on("message", (topic, message) => {
-            console.log("收到消息：", message.toString());
+            if (onMessageCallback) {
+                onMessageCallback(topic, message.toString());
+            }
         });
     }
     //发送消息

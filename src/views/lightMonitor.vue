@@ -6,9 +6,12 @@
     <completeChart :completeData="completeData"></completeChart>
   </div>
   <div class="lightContainer">
-    <lightControl :title="'第一组灯光'" @switch-changed="(value) => handleSwitchChange(value, 1)"></lightControl>
-    <lightControl :title="'第二组灯光'" @switch-changed="(value) => handleSwitchChange(value, 2)"></lightControl>
-    <lightControl :title="'第三组灯光'" @switch-changed="(value) => handleSwitchChange(value, 3)"></lightControl>
+    <lightControl :title="'第一组灯光'" @switch-changed="(value) => handleSwitchChange(value, 1)"
+      ref="light1Child"></lightControl>
+    <lightControl :title="'第二组灯光'" @switch-changed="(value) => handleSwitchChange(value, 2)"
+      ref="light2Child"></lightControl>
+    <lightControl :title="'第三组灯光'" @switch-changed="(value) => handleSwitchChange(value, 3)"
+      ref="light3Child"></lightControl>
   </div>
 </template>
 
@@ -27,9 +30,7 @@ export default {
     missionChart,
     completeChart,
     lightControl
-  },  
-  methods: {
-  },
+  }, 
   setup() {  
     const PublicMqttLight1 = ref(null); 
     const PublicMqttLight2 = ref(null); 
@@ -152,6 +153,9 @@ export default {
     const subscriptionLight1 = 'cloud/' + sn1 + '/cmd';  
     const subscriptionLight2 = 'cloud/' + sn2 + '/cmd';  
     const subscriptionLight3 = 'cloud/' + sn3 + '/cmd';  
+    const light1Child = ref(null);
+    const light2Child = ref(null);
+    const light3Child = ref(null);
     let intervalId = null;
     let url = inject('broker')
     const updateRandomData = () => {  
@@ -175,18 +179,34 @@ export default {
       completeData.value.series.data[0].value = Math.floor(Math.random() * 10000) / 100;
     };  
     const startMqtt = () => {  
-      PublicMqttLight1.value = new MqttClient(url,subscriptionLight1);  
+      PublicMqttLight1.value = new MqttClient(url,subscriptionLight1 + '/cack');  
       PublicMqttLight1.value.init();  
       PublicMqttLight1.value.link();  
-      PublicMqttLight1.value.get(); // 立即开始监听消息  
-      PublicMqttLight2.value = new MqttClient(url,subscriptionLight2);  
+      PublicMqttLight1.value.get((topic, message) => {
+        let valid = JSON.parse(message)
+        console.log(`Topic: ${topic}, Message: ${valid.valid}`);
+        light1Child.value.changeSwitch(valid.valid == "1");
+      });
+      PublicMqttLight2.value = new MqttClient(url,subscriptionLight2 + '/cack');  
       PublicMqttLight2.value.init();  
       PublicMqttLight2.value.link();  
-      PublicMqttLight2.value.get(); // 立即开始监听消息  
-      PublicMqttLight3.value = new MqttClient(url,subscriptionLight3);  
+      PublicMqttLight2.value.get((topic, message) => {
+        let valid = JSON.parse(message)
+          console.log(`Topic: ${topic}, Message: ${valid.valid}`);
+        if (light2Child.value) {
+          light2Child.value.changeSwitch(valid.valid == "1");
+        }
+      });
+      PublicMqttLight3.value = new MqttClient(url,subscriptionLight3 + '/cack');  
       PublicMqttLight3.value.init();  
       PublicMqttLight3.value.link();  
-      PublicMqttLight3.value.get(); // 立即开始监听消息  
+      PublicMqttLight3.value.get((topic, message) => {
+        let valid = JSON.parse(message)
+          console.log(`Topic: ${topic}, Message: ${valid.valid}`);
+        if (light3Child.value) {
+          light3Child.value.changeSwitch(valid.valid == "1");
+        }
+      });
     };  
     
     const handleSwitchChange = (value,group) => {
@@ -200,27 +220,30 @@ export default {
               sn: "LCON202408201704888",
               type:"rtg",
               datacom:{
-                  "Light0010001Set":status,
-                  "Light0010002Set":status,
-                  "Light0010003Set":status,
-                  "Light0010004Set":status,
-                  "Light0010005Set":status,
-                  "Light0010006Set":status,
               }	
           }
       switch ( group ){
         case 1:
           msg.sn = sn1
+          msg.pKey = "LCON0" + group + "G"
+          msg.datacom[`Light00${group}0001Set`] = status
+          msg.datacom[`Light00${group}0002Set`] = status
           if(PublicMqttLight1.value)
             PublicMqttLight1.value.publish(subscriptionLight1,JSON.stringify(msg))
           break
         case 2:
           msg.sn = sn2
+          msg.pKey = "LCON0" + group + "G"
+          msg.datacom[`Light00${group}0001Set`] = status
+          msg.datacom[`Light00${group}0002Set`] = status
           if(PublicMqttLight2.value)
             PublicMqttLight2.value.publish(subscriptionLight2,JSON.stringify(msg))
           break
         case 3:
           msg.sn = sn3
+          msg.pKey = "LCON0" + group + "G"
+          msg.datacom[`Light00${group}0001Set`] = status
+          msg.datacom[`Light00${group}0002Set`] = status
           if(PublicMqttLight3.value)
             PublicMqttLight3.value.publish(subscriptionLight3,JSON.stringify(msg))
           break
@@ -257,6 +280,9 @@ export default {
       lightTotal,
       runTotal,
       missionTotal,
+      light1Child,
+      light2Child,
+      light3Child,
       handleSwitchChange
     };  
   },  

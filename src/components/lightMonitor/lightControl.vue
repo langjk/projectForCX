@@ -7,6 +7,7 @@
             style="--el-switch-on-color:rgb(14,209,239); --el-switch-off-color:rgb(221,43,67)"
             active-text="开"
             inactive-text="关"
+            :loading="loading"
             @change="handleChange"
         />
         <div class="lightGroup">
@@ -22,28 +23,49 @@
 import { ref } from 'vue'
 import lightOn from '@/assets/lightOn.png'
 import lightOff from '@/assets/lightOff.png'
+import { ElMessage } from 'element-plus'
 export default {
     props: {  
         title: {  
             type: String,  
             required: true  
-        }
+        },
     },
-    setup() {
-        const switchStatus = ref(0)
+    setup(props,{ emit }) {
+        const switchStatus = ref(false)
         const lightOnRef = ref(lightOn)  
-        const lightOffRef = ref(lightOff)  
+        const lightOffRef = ref(lightOff) 
+        const loading = ref(false) 
+        const changeSwitch = (value) => {
+            if(value == true){
+                loading.value = false;
+                ElMessage({
+                    message: '设置成功',
+                    type: 'success',
+                })
+            }
+            else{
+                loading.value = false;
+                switchStatus.value = switchStatus.value?false:true
+                ElMessage({
+                    message: '设置失败',
+                    type: 'error',
+                })
+            }
+        }
+        const handleChange = () => {
+            loading.value = true
+            emit('switch-changed', switchStatus.value);
+        }
         return{
             switchStatus,
             lightOnRef,
-            lightOffRef
+            lightOffRef,
+            loading,
+            changeSwitch,
+            handleChange
         }
     },
-    methods: {
-        handleChange() {
-            this.$emit('switch-changed', this.switchStatus);
-        }
-    }
 }
 </script>
 <style scoped>
