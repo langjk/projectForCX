@@ -64,7 +64,7 @@ class MqttClient{
     publish(topic, message) {
         this.client.publish(topic, message, (error) => {
             if (!error) {
-                console.log("消息发送成功");
+                console.log("消息发送成功,topic:"+topic);
             } else {
                 console.error("消息发送失败", error);
             }

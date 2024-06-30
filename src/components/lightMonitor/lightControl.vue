@@ -36,26 +36,37 @@ export default {
         const lightOnRef = ref(lightOn)  
         const lightOffRef = ref(lightOff) 
         const loading = ref(false) 
-        const changeSwitch = (value) => {
-            if(value == true){
-                loading.value = false;
-                ElMessage({
-                    message: '设置成功',
-                    type: 'success',
-                })
+        let timeoutId = null;
+        const timeStatus = ref(false)
+        const changeSwitch = (value,flag) => {
+            clearTimeout(timeoutId);
+            loading.value = false;
+            if(flag == false){
+                switchStatus.value = !switchStatus.value
+                if(timeStatus.value == true){
+                    ElMessage({
+                        message: '边缘节点没有响应',
+                        type: 'error',
+                    })
+                    timeStatus.value = false
+                }
+                else
+                    ElMessage({
+                        message: '设置失败',
+                        type: 'error',
+                    })
             }
-            else{
-                loading.value = false;
-                switchStatus.value = switchStatus.value?false:true
-                ElMessage({
-                    message: '设置失败',
-                    type: 'error',
-                })
+            else if(flag == true){
+                switchStatus.value = value
             }
         }
         const handleChange = () => {
             loading.value = true
             emit('switch-changed', switchStatus.value);
+            timeoutId = setTimeout(() => {
+                timeStatus.value = true;
+                changeSwitch(false,false);
+            }, 10000);
         }
         return{
             switchStatus,

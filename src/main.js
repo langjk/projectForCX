@@ -11,7 +11,7 @@ app.use(ElementPlus)
 app.use(router) //注册路由
 app.component('ECharts',ECharts)
 
-app.provide('broker', ref('ws://localhost:8083/mqtt'))
+app.provide('broker', ref('ws://broker.emqx.io:8083/mqtt'))
 app.provide('light1', ref('LCON202408201704888'))
 app.provide('light2', ref('LCON202408201704889'))
 app.provide('light3', ref('LCON202408201704890'))

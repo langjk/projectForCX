@@ -23,6 +23,7 @@ import runChart from '../components/lightMonitor/runChart.vue';
 import missionChart from '../components/lightMonitor/missionChart.vue';
 import completeChart from '../components/lightMonitor/completeChart.vue';
 import lightControl from '../components/lightMonitor/lightControl.vue';
+import { ElMessage } from 'element-plus'
 export default {  
   components: {  
     lightChart,
@@ -150,9 +151,12 @@ export default {
     const sn1 = inject('light1').value
     const sn2 = inject('light2').value
     const sn3 = inject('light3').value
-    const subscriptionLight1 = 'cloud/' + sn1 + '/cmd';  
-    const subscriptionLight2 = 'cloud/' + sn2 + '/cmd';  
-    const subscriptionLight3 = 'cloud/' + sn3 + '/cmd';  
+    const subscriptionPublishLight1 = 'cloud/' + sn1 + '/cmd';  
+    const subscriptionPublishLight2 = 'cloud/' + sn2 + '/cmd';  
+    const subscriptionPublishLight3 = 'cloud/' + sn3 + '/cmd';  
+    const subscriptionGetLight1 = 'edge/' + sn1 + '/#';  
+    const subscriptionGetLight2 = 'edge/' + sn2 + '/#';  
+    const subscriptionGetLight3 = 'edge/' + sn3 + '/#';  
     const light1Child = ref(null);
     const light2Child = ref(null);
     const light3Child = ref(null);
@@ -179,32 +183,117 @@ export default {
       completeData.value.series.data[0].value = Math.floor(Math.random() * 10000) / 100;
     };  
     const startMqtt = () => {  
-      PublicMqttLight1.value = new MqttClient(url,subscriptionLight1 + '/cack');  
+      PublicMqttLight1.value = new MqttClient(url,subscriptionGetLight1);  
       PublicMqttLight1.value.init();  
       PublicMqttLight1.value.link();  
       PublicMqttLight1.value.get((topic, message) => {
         let valid = JSON.parse(message)
-        console.log(`Topic: ${topic}, Message: ${valid.valid}`);
-        light1Child.value.changeSwitch(valid.valid == "1");
+        let parts = topic.split('/');
+        let lastPart = parts[parts.length - 1];
+        console.log(`Topic: ${topic}, Message: ${valid.valid},route: ${lastPart}`);
+        if(valid.valid == "1" && lastPart == 'control'){
+          ElMessage({
+                    message: '设置成功',
+                    type: 'success',
+                })
+          let msg = {	
+                  pKey:"LCON01G",
+                  dname:"LCON",
+                  sn: sn1,
+                  type:"rtg",
+                  datacom:{
+                    state:1
+                  }	
+              }
+          PublicMqttLight1.value.publish(subscriptionPublishLight1 + '/status',JSON.stringify(msg))
+        }
+        if(valid.valid == "1" && lastPart == 'status'){
+          ElMessage({
+                    message: '正在查询状态',
+                    type: 'warning',
+                })
+        }
+        if('data' in valid){
+          ElMessage({
+                    message: '获取状态成功',
+                    type: 'success',
+                })
+          if(light1Child.value)
+            light1Child.value.changeSwitch(valid.data[0],true);
+        }
       });
-      PublicMqttLight2.value = new MqttClient(url,subscriptionLight2 + '/cack');  
+      PublicMqttLight2.value = new MqttClient(url,subscriptionGetLight2);  
       PublicMqttLight2.value.init();  
       PublicMqttLight2.value.link();  
       PublicMqttLight2.value.get((topic, message) => {
         let valid = JSON.parse(message)
-          console.log(`Topic: ${topic}, Message: ${valid.valid}`);
-        if (light2Child.value) {
-          light2Child.value.changeSwitch(valid.valid == "1");
+        console.log(`Topic: ${topic}, Message: ${valid.valid}`);
+        if(valid.valid == "1" && lastPart == 'control'){
+          ElMessage({
+                    message: '设置成功',
+                    type: 'success',
+                })
+          let msg = {	
+                  pKey:"LCON02G",
+                  dname:"LCON",
+                  sn: sn2,
+                  type:"rtg",
+                  datacom:{
+                    state:1
+                  }	
+              }
+          PublicMqttLight2.value.publish(subscriptionPublishLight2 + '/status',JSON.stringify(msg))
+        }
+        if(valid.valid == "1" && lastPart == 'status'){
+          ElMessage({
+                    message: '正在查询状态',
+                    type: 'warning',
+                })
+        }
+        if('data' in valid){
+          ElMessage({
+                    message: '获取状态成功',
+                    type: 'success',
+                })
+          if(light2Child.value)
+            light2Child.value.changeSwitch(valid.data[0],true);
         }
       });
-      PublicMqttLight3.value = new MqttClient(url,subscriptionLight3 + '/cack');  
+      PublicMqttLight3.value = new MqttClient(url,subscriptionGetLight3);  
       PublicMqttLight3.value.init();  
       PublicMqttLight3.value.link();  
       PublicMqttLight3.value.get((topic, message) => {
         let valid = JSON.parse(message)
-          console.log(`Topic: ${topic}, Message: ${valid.valid}`);
-        if (light3Child.value) {
-          light3Child.value.changeSwitch(valid.valid == "1");
+        console.log(`Topic: ${topic}, Message: ${valid.valid}`);
+        if(valid.valid == "1" && lastPart == 'control'){
+          ElMessage({
+                    message: '设置成功',
+                    type: 'success',
+                })
+          let msg = {	
+                  pKey:"LCON03G",
+                  dname:"LCON",
+                  sn: sn3,
+                  type:"rtg",
+                  datacom:{
+                    state:1
+                  }	
+              }
+          PublicMqttLight1.value.publish(subscriptionPublishLight3 + '/status',JSON.stringify(msg))
+        }
+        if(valid.valid == "1" && lastPart == 'status'){
+          ElMessage({
+                    message: '正在查询状态',
+                    type: 'warning',
+                })
+        }
+        if('data' in valid){
+          ElMessage({
+                    message: '获取状态成功',
+                    type: 'success',
+                })
+          if(light3Child.value)
+            light3Child.value.changeSwitch(valid.data[0],true);
         }
       });
     };  
@@ -229,7 +318,7 @@ export default {
           msg.datacom[`Light00${group}0001Set`] = status
           msg.datacom[`Light00${group}0002Set`] = status
           if(PublicMqttLight1.value)
-            PublicMqttLight1.value.publish(subscriptionLight1,JSON.stringify(msg))
+            PublicMqttLight1.value.publish(subscriptionPublishLight1+'/control',JSON.stringify(msg))
           break
         case 2:
           msg.sn = sn2
@@ -237,7 +326,7 @@ export default {
           msg.datacom[`Light00${group}0001Set`] = status
           msg.datacom[`Light00${group}0002Set`] = status
           if(PublicMqttLight2.value)
-            PublicMqttLight2.value.publish(subscriptionLight2,JSON.stringify(msg))
+            PublicMqttLight2.value.publish(subscriptionPublishLight2+'/control',JSON.stringify(msg))
           break
         case 3:
           msg.sn = sn3
@@ -245,7 +334,7 @@ export default {
           msg.datacom[`Light00${group}0001Set`] = status
           msg.datacom[`Light00${group}0002Set`] = status
           if(PublicMqttLight3.value)
-            PublicMqttLight3.value.publish(subscriptionLight3,JSON.stringify(msg))
+            PublicMqttLight3.value.publish(subscriptionPublishLight3+'/control',JSON.stringify(msg))
           break
         default:break;
       }
