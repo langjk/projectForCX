@@ -57,7 +57,10 @@ export default {
                     })
             }
             else if(flag == true){
-                switchStatus.value = value
+                if(value == "1")
+                    switchStatus.value = true
+                else
+                    switchStatus.value = false
             }
         }
         const handleChange = () => {

@@ -219,7 +219,7 @@ export default {
                     type: 'success',
                 })
           if(light1Child.value)
-            light1Child.value.changeSwitch(valid.data[0],true);
+            light1Child.value.changeSwitch(valid.data[Object.keys(valid.data)[0]],true);
         }
       });
       PublicMqttLight2.value = new MqttClient(url,subscriptionGetLight2);  
@@ -256,7 +256,7 @@ export default {
                     type: 'success',
                 })
           if(light2Child.value)
-            light2Child.value.changeSwitch(valid.data[0],true);
+            light2Child.value.changeSwitch(valid.data[Object.keys(valid.data)[0]],true);
         }
       });
       PublicMqttLight3.value = new MqttClient(url,subscriptionGetLight3);  
@@ -293,7 +293,7 @@ export default {
                     type: 'success',
                 })
           if(light3Child.value)
-            light3Child.value.changeSwitch(valid.data[0],true);
+            light3Child.value.changeSwitch(valid.data[Object.keys(valid.data)[0]],true);
         }
       });
     };  
